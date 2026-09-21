@@ -1,11 +1,12 @@
-# Cloudflare Pages 重定向规则。每行：<来源> <目标> <状态码>
+# Cloudflare Pages 重定向规则。每行：<来源路径> <目标> <状态码>
 #
-# 来源可以写完整 URL（带主机名），用来做域名级重定向；
-# 也可以只写路径，对本站所有域名生效。
-
-# www 统一 301 到主域名，避免两个地址都能打开正文、分散 SEO 权重。
-https://www.zhangyunfeng.com/* https://zhangyunfeng.com/:splat 301
-
+# ⚠️ 来源只能是路径，不能带主机名。
+# 试过 `https://www.zhangyunfeng.com/* https://zhangyunfeng.com/:splat 301`，
+# 构建日志回的是「Parsed 0 valid redirect rules. Found invalid redirect lines」——
+# Pages 会把带域名的行判为无效直接丢弃。
+# 域名级重定向（如 www → 主域名）要在 Cloudflare 的 Rules → Redirect Rules 里做，
+# 不在这个文件里。
+#
 # ---------------------------------------------------------------
 # 文章 URL 发布后不改。万一必须改，在下面加一条 301，别直接删掉旧地址——
 # 搜索引擎的收录和别人贴出去的链接都还指着它。
@@ -16,4 +17,4 @@ https://www.zhangyunfeng.com/* https://zhangyunfeng.com/:splat 301
 # 栏目改名时，整个前缀一起转：
 # /move/*  /relocation/:splat  301
 
-# 目前没有需要重定向的文章地址。
+# 目前没有需要重定向的地址。

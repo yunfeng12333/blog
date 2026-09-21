@@ -22,9 +22,8 @@ const sections = await Promise.all(
       <p>{SITE.intro}</p>
     </section>
 
-    <p class="byline">
-      由 <a href="/about/">{SITE.author}</a> 写于都柏林
-    </p>
+    {/* 中文里人名前后不留空格，标签之间不能换行，否则会渲染出空白 */}
+    <p class="byline">由<a href="/about/">{SITE.author}</a>写于都柏林</p>
 
     <nav class="sections" aria-label="栏目">
       {

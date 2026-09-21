@@ -40,10 +40,16 @@ export async function getSeriesPosts(series: string): Promise<Post[]> {
     .sort((a, b) => (a.data.seriesOrder ?? 0) - (b.data.seriesOrder ?? 0));
 }
 
-/** 全部系列 slug */
+/**
+ * 全部系列 slug。只返回已发布两篇以上的系列——
+ * 一篇的「系列」既没有导航价值，页面上写「共 1 篇」也奇怪。
+ */
 export async function getAllSeries(): Promise<string[]> {
-  const posts = await getPosts();
-  return [...new Set(posts.map((p) => p.data.series).filter(Boolean))] as string[];
+  const counts = new Map<string, number>();
+  for (const post of await getPosts()) {
+    if (post.data.series) counts.set(post.data.series, (counts.get(post.data.series) ?? 0) + 1);
+  }
+  return [...counts.entries()].filter(([, n]) => n > 1).map(([slug]) => slug);
 }
 
 /** 全部标签及其文章数，按文章数倒序 */

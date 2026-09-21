@@ -8,6 +8,7 @@ tags: [税务, 身份, 西班牙]
 series: candidate-comparison
 seriesOrder: 3
 policyAsOf: 2026-09-19
+draft: true
 ---
 
 这是一篇示例文章，用来演示政策时效提示条和免责声明组件。

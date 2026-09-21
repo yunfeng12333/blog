@@ -8,6 +8,7 @@ tags: [香港, 教育, 身份]
 series: candidate-comparison
 seriesOrder: 1
 policyAsOf: 2026-09-08
+draft: true
 ---
 
 这是一篇示例文章，用来演示排版、目录、系列导航和政策时效提示。正式写作时把正文替换掉即可。

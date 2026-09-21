@@ -8,6 +8,7 @@ summary: 放弃香港之后为什么是西班牙，以及巴塞和瓦伦西亚�
 tags: [西班牙, 巴塞罗那, 瓦伦西亚, 教育]
 series: candidate-comparison
 seriesOrder: 2
+draft: true
 ---
 
 这是一篇示例文章，用来演示跨页表格、更新日期和标签聚合。

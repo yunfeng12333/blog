@@ -8,6 +8,14 @@
   --font-sans: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC',
     'Hiragino Sans GB', 'Microsoft YaHei', 'Noto Sans CJK SC', 'Source Han Sans SC',
     sans-serif;
+  /*
+   * 标题用衬线，正文仍用无衬线——长篇中文屏读黑体更省力，
+   * 但标题全用黑体会让整站像产品文档而不像写东西的地方。
+   * 拉丁字母落到 Georgia，汉字落到系统宋体，同样不打包字体文件。
+   */
+  --font-serif: Georgia, 'Iowan Old Style', 'Songti SC', 'Songti TC', 'Noto Serif CJK SC',
+    'Source Han Serif SC', 'Source Han Serif', STSong, SimSun, serif;
+
   --font-mono: ui-monospace, SFMono-Regular, Menlo, Consolas, 'Liberation Mono',
     monospace;
 

@@ -1,157 +1,220 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
-import PostList from '../components/PostList.astro';
-import { getPosts, getPostsBySection } from '../lib/posts';
-import { SITE, SECTIONS } from '../site.config';
+import { getPosts, postUrl } from '../lib/posts';
+import { formatDate, readingTime } from '../lib/format';
+import { SITE, getSection } from '../site.config';
 
-const latest = (await getPosts()).slice(0, 6);
-
-const sections = await Promise.all(
-  SECTIONS.map(async (section) => ({
-    ...section,
-    count: (await getPostsBySection(section.key)).length,
-  }))
-);
+/*
+ * 首页就是文章流。之前把两张栏目卡片放在最前面，结果整页像 landing page——
+ * 栏目入口导航里已经有了，不该占首屏。
+ * 最新一篇做头条，其余按时间往下排。
+ */
+const posts = await getPosts();
+const [lead, ...rest] = posts;
+const more = rest.slice(0, 7);
 ---
 
 <BaseLayout title={SITE.title}>
   <div class="wrap">
-    {/* h1 是站名而不是人名：这是一个出版物式的首页，不是个人主页 */}
-    <section class="intro">
+    <header class="masthead">
       <h1>{SITE.title}</h1>
-      <p>{SITE.intro}</p>
-    </section>
-
-    {/* 中文里人名前后不留空格，标签之间不能换行，否则会渲染出空白 */}
-    <p class="byline">由<a href="/about/">{SITE.author}</a>写于都柏林</p>
-
-    <nav class="sections" aria-label="栏目">
-      {
-        sections.map((section) => (
-          <a class="section-card" href={`/${section.key}/`}>
-            <h2>{section.title}</h2>
-            <p>{section.description}</p>
-            <span>{section.count} 篇</span>
-          </a>
-        ))
-      }
-    </nav>
-
-    <section class="latest">
-      <h2 class="latest__title">最新文章</h2>
-      <PostList posts={latest} showSection empty="第一篇还在写。" />
-      <p class="latest__more">
-        <a href="/archive/">看全部文章</a>
+      <p class="masthead__tagline">{SITE.intro}</p>
+      <p class="masthead__byline">
+        由<a href="/about/">{SITE.author}</a>写于都柏林 · 共 {posts.length} 篇
       </p>
-    </section>
+    </header>
+
+    {
+      lead && (
+        <article class="lead">
+          <div class="entry__meta">
+            <time datetime={lead.data.date.toISOString()}>{formatDate(lead.data.date)}</time>
+            <a href={`/${lead.data.section}/`}>{getSection(lead.data.section).title}</a>
+            <span>约 {readingTime(lead.body ?? '')} 分钟</span>
+            {lead.data.draft && <span class="draft-badge">草稿</span>}
+          </div>
+          <h2 class="lead__title">
+            <a href={postUrl(lead)}>{lead.data.title}</a>
+          </h2>
+          <p class="lead__summary">{lead.data.summary}</p>
+          <a class="lead__more" href={postUrl(lead)}>读全文 →</a>
+        </article>
+      )
+    }
+
+    {
+      more.length > 0 && (
+        <section class="stream" aria-label="更多文章">
+          {more.map((post) => (
+            <article class="entry">
+              <div class="entry__meta">
+                <time datetime={post.data.date.toISOString()}>{formatDate(post.data.date)}</time>
+                <a href={`/${post.data.section}/`}>{getSection(post.data.section).title}</a>
+                <span>约 {readingTime(post.body ?? '')} 分钟</span>
+                {post.data.draft && <span class="draft-badge">草稿</span>}
+              </div>
+              <h2 class="entry__title">
+                <a href={postUrl(post)}>{post.data.title}</a>
+              </h2>
+              <p class="entry__summary">{post.data.summary}</p>
+            </article>
+          ))}
+        </section>
+      )
+    }
+
+    {posts.length === 0 && <p class="page-lede">第一篇还在写。</p>}
+
+    <p class="all-posts">
+      <a href="/archive/">全部文章</a>
+    </p>
   </div>
 </BaseLayout>
 
 <style>
-  .intro {
-    margin-top: 3.5rem;
+  /* 报头：站名 + 一句话 + 署名，占三行就够，版面留给文章 */
+  .masthead {
+    margin: 3rem 0 3.5rem;
+    padding-bottom: 1.6rem;
+    border-bottom: 1px solid var(--border);
   }
 
-  .intro h1 {
-    margin: 0 0 0.9rem;
-    font-size: 1.8rem;
-    font-weight: 700;
-    letter-spacing: -0.01em;
+  .masthead h1 {
+    margin: 0 0 0.55rem;
+    font-family: var(--font-serif);
+    font-size: 2rem;
+    font-weight: 600;
+    letter-spacing: 0.02em;
   }
 
-  .intro p {
+  .masthead__tagline {
+    margin: 0;
+    color: var(--text-muted);
+    font-size: 1.02rem;
+    line-height: 1.7;
+  }
+
+  .masthead__byline {
+    margin: 0.9rem 0 0;
+    color: var(--text-faint);
+    font-size: 0.86rem;
+  }
+
+  .masthead__byline a {
+    color: var(--text-muted);
+  }
+
+  /* 头条：最新一篇，字号明显大一档 */
+  .lead {
+    padding-bottom: 2.5rem;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .lead__title {
+    margin: 0.5rem 0 0.7rem;
+    font-family: var(--font-serif);
+    font-size: 1.85rem;
+    line-height: 1.4;
+    font-weight: 600;
+  }
+
+  .lead__summary {
     margin: 0;
     color: var(--text-muted);
     font-size: 1.04rem;
     line-height: 1.8;
   }
 
-  /* 作者退成一行小字的署名，而不是首页的主角 */
-  .byline {
-    margin: 1.2rem 0 0;
-    color: var(--text-faint);
-    font-size: 0.88rem;
+  .lead__more {
+    display: inline-block;
+    margin-top: 1rem;
+    font-size: 0.92rem;
   }
 
-  .byline a {
-    color: var(--text-muted);
-  }
-
-  .sections {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 1rem;
-    margin-top: 3rem;
-  }
-
-  .section-card {
-    display: block;
-    padding: 1.1rem 1.2rem;
-    border: 1px solid var(--border);
-    border-radius: 5px;
-    background: var(--bg-subtle);
+  .lead__title a {
     color: var(--text);
   }
 
-  .section-card:hover {
-    border-color: var(--accent);
+  .lead__title a:hover {
+    color: var(--accent);
     text-decoration: none;
   }
 
-  .section-card:hover h2 {
+  /* 文章流 */
+  .stream {
+    display: grid;
+    gap: 2.6rem;
+    padding-block: 2.5rem;
+  }
+
+  .entry__meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem 0.9rem;
+    align-items: baseline;
+    color: var(--text-faint);
+    font-size: 0.83rem;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .entry__meta a {
+    color: var(--text-faint);
+  }
+
+  .entry__meta a:hover {
     color: var(--accent);
+    text-decoration: none;
   }
 
-  .section-card h2 {
-    margin: 0 0 0.45rem;
-    font-size: 1.08rem;
-    font-weight: 650;
+  .entry__title {
+    margin: 0.35rem 0 0.45rem;
+    font-family: var(--font-serif);
+    font-size: 1.32rem;
+    line-height: 1.5;
+    font-weight: 600;
   }
 
-  .section-card p {
+  .entry__title a {
+    color: var(--text);
+  }
+
+  .entry__title a:hover {
+    color: var(--accent);
+    text-decoration: none;
+  }
+
+  .entry__summary {
     margin: 0;
     color: var(--text-muted);
+    line-height: 1.75;
+  }
+
+  .all-posts {
+    margin: 0;
+    padding-top: 1.6rem;
+    border-top: 1px solid var(--border);
     font-size: 0.92rem;
-    line-height: 1.7;
-  }
-
-  .section-card span {
-    display: block;
-    margin-top: 0.7rem;
-    color: var(--text-faint);
-    font-size: 0.82rem;
-  }
-
-  .latest {
-    margin-top: 3.5rem;
-  }
-
-  .latest__title {
-    margin: 0 0 1.6rem;
-    padding-bottom: 0.5rem;
-    border-bottom: 1px solid var(--border);
-    font-size: 0.86rem;
-    font-weight: 650;
-    letter-spacing: 0.06em;
-    color: var(--text-muted);
-  }
-
-  .latest__more {
-    margin-top: 2.5rem;
-    font-size: 0.9rem;
   }
 
   @media (max-width: 34rem) {
-    .intro {
-      margin-top: 2.2rem;
+    .masthead {
+      margin: 2.2rem 0 2.6rem;
     }
 
-    .intro h1 {
+    .masthead h1 {
+      font-size: 1.65rem;
+    }
+
+    .lead__title {
       font-size: 1.5rem;
     }
 
-    .sections {
-      grid-template-columns: 1fr;
+    .entry__title {
+      font-size: 1.2rem;
+    }
+
+    .stream {
+      gap: 2.2rem;
     }
   }
 </style>

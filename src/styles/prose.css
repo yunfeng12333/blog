@@ -26,8 +26,9 @@
 .prose h2,
 .prose h3,
 .prose h4 {
+  font-family: var(--font-serif);
   line-height: 1.45;
-  font-weight: 650;
+  font-weight: 600;
   scroll-margin-top: 1.5rem;
 }
 

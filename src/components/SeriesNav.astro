@@ -1,0 +1,100 @@
+---
+import { postUrl, type Post } from '../lib/posts';
+
+interface Props {
+  series: string;
+  posts: Post[];
+  current: Post;
+}
+
+const { series, posts, current } = Astro.props;
+const index = posts.findIndex((p) => p.id === current.id);
+const prev = index > 0 ? posts[index - 1] : null;
+const next = index >= 0 && index < posts.length - 1 ? posts[index + 1] : null;
+---
+
+<nav class="series-nav" aria-label="系列导航">
+  <p class="series-nav__label">
+    本文是系列
+    <a href={`/series/${series}/`}>{series}</a>
+    的第 {index + 1} 篇，共 {posts.length} 篇
+  </p>
+
+  <div class="series-nav__links">
+    {
+      prev ? (
+        <a class="series-nav__link" href={postUrl(prev)} rel="prev">
+          <span>上一篇</span>
+          {prev.data.title}
+        </a>
+      ) : (
+        <span />
+      )
+    }
+    {
+      next && (
+        <a class="series-nav__link series-nav__link--next" href={postUrl(next)} rel="next">
+          <span>下一篇</span>
+          {next.data.title}
+        </a>
+      )
+    }
+  </div>
+</nav>
+
+<style>
+  .series-nav {
+    margin-top: 3rem;
+    padding-top: 1.4rem;
+    border-top: 1px solid var(--border);
+  }
+
+  .series-nav__label {
+    margin: 0 0 1rem;
+    color: var(--text-muted);
+    font-size: 0.9rem;
+  }
+
+  .series-nav__links {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0.8rem;
+  }
+
+  .series-nav__link {
+    display: block;
+    padding: 0.75rem 0.9rem;
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    color: var(--text);
+    line-height: 1.55;
+    font-size: 0.96rem;
+  }
+
+  .series-nav__link:hover {
+    border-color: var(--accent);
+    color: var(--accent);
+    text-decoration: none;
+  }
+
+  .series-nav__link--next {
+    text-align: right;
+  }
+
+  .series-nav__link span {
+    display: block;
+    margin-bottom: 0.2rem;
+    color: var(--text-faint);
+    font-size: 0.8rem;
+  }
+
+  @media (max-width: 34rem) {
+    .series-nav__links {
+      grid-template-columns: 1fr;
+    }
+
+    .series-nav__link--next {
+      text-align: left;
+    }
+  }
+</style>

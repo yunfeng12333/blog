@@ -1,0 +1,81 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import { SITE, DISCLAIMER } from '../site.config';
+
+// 这页的文字直接改这里就行，没必要为一页做内容集合。
+---
+
+<BaseLayout title="关于" description={`关于 ${SITE.author} 和这个博客。`}>
+  <div class="wrap">
+    <h1 class="page-title">关于</h1>
+
+    <div class="prose">
+      <p>
+        我是{SITE.author}，二〇一九年从国内搬到都柏林，到现在七年。同时经营几家公司，主业是一家在爱尔兰和英国运营的硬件租赁公司，另外几个项目有的在冷启动，有的已经关掉。
+      </p>
+
+      <p>
+        这个博客写两件事。一件是我们一家四口找下一个落脚点的过程——日本、香港、西班牙都认真评估过，也放弃过，我把每一轮的判断依据和后来发现自己错在哪里都写下来。另一件是一个人管多家公司的实际经验：怎么决定启动一个项目，更重要的是怎么决定关掉它。
+      </p>
+
+      <h2>为什么写</h2>
+
+      <p>
+        移居这件事上，网上能找到的多是中介口径和结果分享，很少有人完整记录决策过程——尤其是改主意的那些时刻。我自己在做决定时很缺这类材料，所以决定自己写一份。
+      </p>
+
+      <p>
+        创业那条线动机简单些：我做过的很多判断当时觉得理所当然，回头看是错的。写下来是为了下次少犯。
+      </p>
+
+      <h2>关于内容</h2>
+
+      <p>
+        涉及政策、税率、签证条件的内容，我会在文章顶部标注信息截至日期，并尽量附官方来源。没有核实过的数字我会写明「待核实」，不会为了行文流畅编一个。
+      </p>
+
+      <p>
+        文章里出现的合作方、员工、客户一律用角色代称。孩子的姓名、学校和我们的具体住址不会出现在这里。
+      </p>
+
+      <h2>联系与订阅</h2>
+
+      <p>
+        目前可以用 <a href="/rss.xml">RSS</a> 订阅全站，或者只订阅
+        <a href="/move/rss.xml">移民决策</a> 和 <a href="/build/rss.xml">创业复盘</a>
+        其中一条线。邮件订阅在做，会在这里公布。
+      </p>
+    </div>
+
+    <aside class="disclaimer">
+      <h2>免责声明</h2>
+      <p>{DISCLAIMER}</p>
+    </aside>
+  </div>
+</BaseLayout>
+
+<style>
+  .prose {
+    margin-top: 2rem;
+  }
+
+  .disclaimer {
+    margin-top: 3rem;
+    padding-top: 1.2rem;
+    border-top: 1px solid var(--border);
+    color: var(--text-faint);
+    font-size: 0.88rem;
+    line-height: 1.7;
+  }
+
+  .disclaimer h2 {
+    margin: 0 0 0.4rem;
+    font-size: 0.88rem;
+    font-weight: 650;
+    color: var(--text-muted);
+  }
+
+  .disclaimer p {
+    margin: 0;
+  }
+</style>

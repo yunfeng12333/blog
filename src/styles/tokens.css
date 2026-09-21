@@ -1,0 +1,71 @@
+/*
+ * 设计 token。配色思路：近黑正文 + 米白底，单一偏暖的砖红做强调色，
+ * 不用渐变和阴影——移民和创业两条线都要显得可信，花哨会掉价。
+ */
+
+:root {
+  /* 中文系统字体栈，不打包任何字体文件，首屏零外部请求 */
+  --font-sans: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC',
+    'Hiragino Sans GB', 'Microsoft YaHei', 'Noto Sans CJK SC', 'Source Han Sans SC',
+    sans-serif;
+  --font-mono: ui-monospace, SFMono-Regular, Menlo, Consolas, 'Liberation Mono',
+    monospace;
+
+  /* 正文宽度：约 40 个汉字 */
+  --measure: 40em;
+  --page-gutter: 20px;
+
+  --text-base: 17px;
+  --leading-prose: 1.8;
+
+  --bg: #fbfaf7;
+  --bg-subtle: #f4f2ed;
+  --bg-code: #f6f4ef;
+  --text: #1a1a1c;
+  --text-muted: #62625e;
+  --text-faint: #6f6f6a;
+  --border: #e2ded4;
+  --border-strong: #cdc8bb;
+  --accent: #a23e2e;
+  --accent-hover: #873325;
+  --accent-soft: #f2e5e1;
+  --selection: #f0ddd8;
+
+  color-scheme: light;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme='light']) {
+    --bg: #16161a;
+    --bg-subtle: #1e1e23;
+    --bg-code: #1c1c21;
+    --text: #e6e4df;
+    --text-muted: #a3a099;
+    --text-faint: #8a8780;
+    --border: #2e2e35;
+    --border-strong: #43434c;
+    --accent: #e07a5f;
+    --accent-hover: #ef9077;
+    --accent-soft: #2b2320;
+    --selection: #3a2c27;
+
+    color-scheme: dark;
+  }
+}
+
+:root[data-theme='dark'] {
+  --bg: #16161a;
+  --bg-subtle: #1e1e23;
+  --bg-code: #1c1c21;
+  --text: #e6e4df;
+  --text-muted: #a3a099;
+  --text-faint: #8a8780;
+  --border: #2e2e35;
+  --border-strong: #43434c;
+  --accent: #e07a5f;
+  --accent-hover: #ef9077;
+  --accent-soft: #2b2320;
+  --selection: #3a2c27;
+
+  color-scheme: dark;
+}

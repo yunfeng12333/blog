@@ -1,0 +1,37 @@
+---
+import { formatDate } from '../lib/format';
+
+interface Props {
+  /** frontmatter 的 policyAsOf，有值才渲染这个组件 */
+  asOf: Date;
+}
+
+const { asOf } = Astro.props;
+---
+
+<aside class="policy-notice">
+  <strong>信息截至 {formatDate(asOf)}</strong>
+  <span>政策、税率与签证条件可能已经变化，请以官方来源为准。</span>
+</aside>
+
+<style>
+  .policy-notice {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.15rem 0.5rem;
+    margin: 1.75rem 0 0;
+    padding: 0.7rem 0.9rem;
+    border: 1px solid var(--border-strong);
+    border-left: 3px solid var(--accent);
+    border-radius: 3px;
+    background: var(--bg-subtle);
+    color: var(--text-muted);
+    font-size: 0.9rem;
+    line-height: 1.65;
+  }
+
+  .policy-notice strong {
+    color: var(--text);
+    font-variant-numeric: tabular-nums;
+  }
+</style>

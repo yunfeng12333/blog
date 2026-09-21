@@ -1,0 +1,68 @@
+---
+import type { MarkdownHeading } from 'astro';
+
+interface Props {
+  headings: MarkdownHeading[];
+}
+
+// 只收 h2/h3，h4 以下进目录会太碎
+const items = Astro.props.headings.filter((h) => h.depth === 2 || h.depth === 3);
+---
+
+{
+  items.length >= 2 && (
+    <nav class="toc" aria-label="本文目录">
+      <h2 class="toc__title">目录</h2>
+      <ol>
+        {items.map((h) => (
+          <li class={h.depth === 3 ? 'toc__sub' : undefined}>
+            <a href={`#${h.slug}`}>{h.text}</a>
+          </li>
+        ))}
+      </ol>
+    </nav>
+  )
+}
+
+<style>
+  .toc {
+    margin: 2rem 0 0;
+    padding: 1rem 1.1rem;
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    background: var(--bg-subtle);
+    font-size: 0.92rem;
+  }
+
+  .toc__title {
+    margin: 0 0 0.6rem;
+    font-size: 0.85rem;
+    font-weight: 650;
+    color: var(--text-muted);
+    letter-spacing: 0.04em;
+  }
+
+  .toc ol {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .toc li + li {
+    margin-top: 0.42em;
+  }
+
+  .toc__sub {
+    padding-left: 1.1em;
+    font-size: 0.95em;
+  }
+
+  .toc a {
+    color: var(--text-muted);
+    line-height: 1.55;
+  }
+
+  .toc a:hover {
+    color: var(--accent);
+  }
+</style>

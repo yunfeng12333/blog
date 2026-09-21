@@ -1,0 +1,132 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import { getPosts, getAllTags, postUrl, tagToSlug } from '../lib/posts';
+import { formatDate } from '../lib/format';
+import { getSection } from '../site.config';
+
+const posts = await getPosts();
+const tags = await getAllTags();
+
+// 按年份分组，年份倒序
+const byYear = new Map<number, typeof posts>();
+for (const post of posts) {
+  const year = post.data.date.getUTCFullYear();
+  byYear.set(year, [...(byYear.get(year) ?? []), post]);
+}
+const years = [...byYear.entries()].sort((a, b) => b[0] - a[0]);
+---
+
+<BaseLayout title="归档" description={`全部 ${posts.length} 篇文章，按年份排列。`}>
+  <div class="wrap">
+    <h1 class="page-title">归档</h1>
+    <p class="page-lede">全部 {posts.length} 篇文章。</p>
+
+    {
+      years.map(([year, yearPosts]) => (
+        <section class="year">
+          <h2 class="year__title">{year}</h2>
+          <ul class="year__list">
+            {yearPosts.map((post) => (
+              <li>
+                <time datetime={post.data.date.toISOString()}>{formatDate(post.data.date)}</time>
+                <a href={postUrl(post)}>{post.data.title}</a>
+                <span class="year__section">{getSection(post.data.section).title}</span>
+              </li>
+            ))}
+          </ul>
+        </section>
+      ))
+    }
+
+    {
+      tags.length > 0 && (
+        <section class="all-tags">
+          <h2 class="year__title">全部标签</h2>
+          <div class="all-tags__list">
+            {tags.map(({ tag, count }) => (
+              <a class="tag-pill" href={`/tags/${tagToSlug(tag)}/`}>
+                {tag} <span>{count}</span>
+              </a>
+            ))}
+          </div>
+        </section>
+      )
+    }
+  </div>
+</BaseLayout>
+
+<style>
+  .year,
+  .all-tags {
+    margin-bottom: 3rem;
+  }
+
+  .year__title {
+    margin: 0 0 1rem;
+    padding-bottom: 0.45rem;
+    border-bottom: 1px solid var(--border);
+    font-size: 0.86rem;
+    font-weight: 650;
+    letter-spacing: 0.06em;
+    color: var(--text-muted);
+    font-variant-numeric: tabular-nums;
+  }
+
+  .year__list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+
+  .year__list li {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    gap: 0.3rem 0.8rem;
+    padding: 0.5rem 0;
+  }
+
+  .year__list time {
+    flex: 0 0 auto;
+    width: 6.2rem;
+    color: var(--text-faint);
+    font-size: 0.85rem;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .year__list a {
+    color: var(--text);
+    line-height: 1.6;
+  }
+
+  .year__list a:hover {
+    color: var(--accent);
+    text-decoration: none;
+  }
+
+  .year__section {
+    color: var(--text-faint);
+    font-size: 0.82rem;
+  }
+
+  .all-tags__list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+  }
+
+  .all-tags__list span {
+    color: var(--text-faint);
+    font-variant-numeric: tabular-nums;
+  }
+
+  @media (max-width: 34rem) {
+    .year__list li {
+      gap: 0.15rem 0.7rem;
+    }
+
+    .year__list time {
+      width: auto;
+    }
+  }
+</style>

@@ -1,0 +1,66 @@
+---
+// 短链跳板。做成静态 HTML 而不是 Cloudflare _redirects，
+// 是为了不绑死在某一家托管商上——换主机时这些链接照样有效。
+import { getPosts, postUrl, shortId } from '../../lib/posts';
+import { SITE } from '../../site.config';
+
+export async function getStaticPaths() {
+  const posts = await getPosts();
+  return posts.map((post) => ({
+    params: { shortId: shortId(post) },
+    props: { target: postUrl(post), title: post.data.title },
+  }));
+}
+
+interface Props {
+  target: string;
+  title: string;
+}
+
+const { target, title } = Astro.props;
+const absolute = new URL(target, SITE.url).href;
+---
+
+<!doctype html>
+<html lang={SITE.lang}>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>正在跳转…</title>
+    <meta http-equiv="refresh" content={`0; url=${target}`} />
+    <meta name="robots" content="noindex, follow" />
+    <link rel="canonical" href={absolute} />
+    <style>
+      body {
+        margin: 0;
+        min-height: 100vh;
+        display: grid;
+        place-items: center;
+        padding: 1.5rem;
+        background: #fbfaf7;
+        color: #1a1a1c;
+        font-family: -apple-system, BlinkMacSystemFont, 'PingFang SC', 'Microsoft YaHei', sans-serif;
+        line-height: 1.8;
+        text-align: center;
+      }
+      a {
+        color: #a23e2e;
+      }
+      @media (prefers-color-scheme: dark) {
+        body {
+          background: #16161a;
+          color: #e6e4df;
+        }
+        a {
+          color: #e07a5f;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <p>正在跳转到《{title}》…<br /><a href={target}>如果没有自动跳转，点这里</a></p>
+    <script is:inline define:vars={{ target }}>
+      location.replace(target);
+    </script>
+  </body>
+</html>

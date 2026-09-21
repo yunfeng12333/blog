@@ -1,0 +1,142 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import PostList from '../components/PostList.astro';
+import { getPosts, getPostsBySection } from '../lib/posts';
+import { SITE, SECTIONS } from '../site.config';
+
+const latest = (await getPosts()).slice(0, 6);
+
+const sections = await Promise.all(
+  SECTIONS.map(async (section) => ({
+    ...section,
+    count: (await getPostsBySection(section.key)).length,
+  }))
+);
+---
+
+<BaseLayout title={SITE.title}>
+  <div class="wrap">
+    <section class="intro">
+      <h1>{SITE.title}</h1>
+      <p>{SITE.intro}</p>
+    </section>
+
+    <nav class="sections" aria-label="栏目">
+      {
+        sections.map((section) => (
+          <a class="section-card" href={`/${section.key}/`}>
+            <h2>{section.title}</h2>
+            <p>{section.description}</p>
+            <span>{section.count} 篇</span>
+          </a>
+        ))
+      }
+    </nav>
+
+    <section class="latest">
+      <h2 class="latest__title">最新文章</h2>
+      <PostList posts={latest} showSection empty="第一篇还在写。" />
+      <p class="latest__more">
+        <a href="/archive/">看全部文章</a>
+      </p>
+    </section>
+  </div>
+</BaseLayout>
+
+<style>
+  .intro {
+    margin-top: 3.5rem;
+  }
+
+  .intro h1 {
+    margin: 0 0 0.9rem;
+    font-size: 1.8rem;
+    font-weight: 700;
+    letter-spacing: -0.01em;
+  }
+
+  .intro p {
+    margin: 0;
+    color: var(--text-muted);
+    font-size: 1.04rem;
+    line-height: 1.8;
+  }
+
+  .sections {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+    margin-top: 3rem;
+  }
+
+  .section-card {
+    display: block;
+    padding: 1.1rem 1.2rem;
+    border: 1px solid var(--border);
+    border-radius: 5px;
+    background: var(--bg-subtle);
+    color: var(--text);
+  }
+
+  .section-card:hover {
+    border-color: var(--accent);
+    text-decoration: none;
+  }
+
+  .section-card:hover h2 {
+    color: var(--accent);
+  }
+
+  .section-card h2 {
+    margin: 0 0 0.45rem;
+    font-size: 1.08rem;
+    font-weight: 650;
+  }
+
+  .section-card p {
+    margin: 0;
+    color: var(--text-muted);
+    font-size: 0.92rem;
+    line-height: 1.7;
+  }
+
+  .section-card span {
+    display: block;
+    margin-top: 0.7rem;
+    color: var(--text-faint);
+    font-size: 0.82rem;
+  }
+
+  .latest {
+    margin-top: 3.5rem;
+  }
+
+  .latest__title {
+    margin: 0 0 1.6rem;
+    padding-bottom: 0.5rem;
+    border-bottom: 1px solid var(--border);
+    font-size: 0.86rem;
+    font-weight: 650;
+    letter-spacing: 0.06em;
+    color: var(--text-muted);
+  }
+
+  .latest__more {
+    margin-top: 2.5rem;
+    font-size: 0.9rem;
+  }
+
+  @media (max-width: 34rem) {
+    .intro {
+      margin-top: 2.2rem;
+    }
+
+    .intro h1 {
+      font-size: 1.5rem;
+    }
+
+    .sections {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>

@@ -1,0 +1,142 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { getAllSeries, getSeriesPosts, postUrl, type Post } from '../../lib/posts';
+import { formatDate } from '../../lib/format';
+import { SITE, getSection } from '../../site.config';
+
+export async function getStaticPaths() {
+  const series = await getAllSeries();
+  return Promise.all(
+    series.map(async (slug) => ({
+      params: { slug },
+      props: { slug, posts: await getSeriesPosts(slug) },
+    }))
+  );
+}
+
+interface Props {
+  slug: string;
+  posts: Post[];
+}
+
+const { slug, posts } = Astro.props;
+
+// 系列里的文章可能跨栏目，用第一篇的栏目做面包屑
+const section = getSection(posts[0].data.section);
+const description = `系列「${slug}」共 ${posts.length} 篇：${posts.map((p) => p.data.title).join('、')}`;
+
+const jsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'BreadcrumbList',
+  itemListElement: [
+    { '@type': 'ListItem', position: 1, name: SITE.title, item: `${SITE.url}/` },
+    {
+      '@type': 'ListItem',
+      position: 2,
+      name: section.title,
+      item: `${SITE.url}/${section.key}/`,
+    },
+    {
+      '@type': 'ListItem',
+      position: 3,
+      name: `系列：${slug}`,
+      item: new URL(Astro.url.pathname, SITE.url).href,
+    },
+  ],
+};
+---
+
+<BaseLayout title={`系列：${slug}`} description={description.slice(0, 160)} jsonLd={jsonLd}>
+  <div class="wrap">
+    <nav class="crumbs" aria-label="面包屑">
+      <a href="/">首页</a>
+      <span aria-hidden="true">/</span>
+      <a href={`/${section.key}/`}>{section.title}</a>
+      <span aria-hidden="true">/</span>
+      <span>系列</span>
+    </nav>
+
+    <h1 class="page-title">{slug}</h1>
+    <p class="page-lede">这个系列共 {posts.length} 篇，按顺序读效果最好。</p>
+
+    <ol class="series-list">
+      {
+        posts.map((post, i) => (
+          <li>
+            <span class="series-list__num">{String(i + 1).padStart(2, '0')}</span>
+            <div>
+              <h2>
+                <a href={postUrl(post)}>{post.data.title}</a>
+              </h2>
+              <p class="post-item__summary">{post.data.summary}</p>
+              <time class="series-list__date" datetime={post.data.date.toISOString()}>
+                {formatDate(post.data.date)}
+              </time>
+            </div>
+          </li>
+        ))
+      }
+    </ol>
+  </div>
+</BaseLayout>
+
+<style>
+  .crumbs {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.45rem;
+    margin-top: 2.5rem;
+    color: var(--text-faint);
+    font-size: 0.86rem;
+  }
+
+  .crumbs a {
+    color: var(--text-muted);
+  }
+
+  .series-list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    gap: 1.8rem;
+  }
+
+  .series-list li {
+    display: grid;
+    grid-template-columns: 2.4rem 1fr;
+    gap: 0.4rem;
+    align-items: start;
+  }
+
+  .series-list__num {
+    padding-top: 0.15rem;
+    color: var(--text-faint);
+    font-variant-numeric: tabular-nums;
+    font-size: 0.95rem;
+  }
+
+  .series-list h2 {
+    margin: 0 0 0.4rem;
+    font-size: 1.16rem;
+    line-height: 1.5;
+    font-weight: 600;
+  }
+
+  .series-list h2 a {
+    color: var(--text);
+  }
+
+  .series-list h2 a:hover {
+    color: var(--accent);
+    text-decoration: none;
+  }
+
+  .series-list__date {
+    display: block;
+    margin-top: 0.45rem;
+    color: var(--text-faint);
+    font-size: 0.84rem;
+    font-variant-numeric: tabular-nums;
+  }
+</style>

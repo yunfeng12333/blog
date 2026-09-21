@@ -1,0 +1,7 @@
+User-agent: *
+Allow: /
+
+# 短链只是跳板，正文有自己的规范地址
+Disallow: /p/
+
+Sitemap: https://zhangyunfeng.com/sitemap-index.xml

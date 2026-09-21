@@ -1,0 +1,30 @@
+---
+import { DISCLAIMER } from '../site.config';
+---
+
+<aside class="disclaimer">
+  <h2>免责声明</h2>
+  <p>{DISCLAIMER}</p>
+</aside>
+
+<style>
+  .disclaimer {
+    margin-top: 3rem;
+    padding-top: 1.2rem;
+    border-top: 1px solid var(--border);
+    color: var(--text-faint);
+    font-size: 0.88rem;
+    line-height: 1.7;
+  }
+
+  .disclaimer h2 {
+    margin: 0 0 0.4rem;
+    font-size: 0.88rem;
+    font-weight: 650;
+    color: var(--text-muted);
+  }
+
+  .disclaimer p {
+    margin: 0;
+  }
+</style>

@@ -1,0 +1,38 @@
+---
+import { postUrl, type Post } from '../lib/posts';
+import { formatDate } from '../lib/format';
+import { getSection } from '../site.config';
+
+interface Props {
+  posts: Post[];
+  /** 跨栏目的列表（首页、标签页）需要标出文章属于哪个栏目 */
+  showSection?: boolean;
+  empty?: string;
+}
+
+const { posts, showSection = false, empty = '这里还没有文章。' } = Astro.props;
+---
+
+{
+  posts.length === 0 ? (
+    <p class="page-lede">{empty}</p>
+  ) : (
+    <ul class="post-list">
+      {posts.map((post) => (
+        <li>
+          <article>
+            <div class="post-item__meta">
+              <time datetime={post.data.date.toISOString()}>{formatDate(post.data.date)}</time>
+              {showSection && <a href={`/${post.data.section}/`}>{getSection(post.data.section).title}</a>}
+              {post.data.draft && <span class="draft-badge">草稿</span>}
+            </div>
+            <h2 class="post-item__title">
+              <a href={postUrl(post)}>{post.data.title}</a>
+            </h2>
+            <p class="post-item__summary">{post.data.summary}</p>
+          </article>
+        </li>
+      ))}
+    </ul>
+  )
+}

@@ -1,0 +1,44 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import PostList from '../../components/PostList.astro';
+import { getPostsBySection, type Post } from '../../lib/posts';
+import { SECTIONS, type SectionConfig } from '../../site.config';
+
+export async function getStaticPaths() {
+  return Promise.all(
+    SECTIONS.map(async (section) => ({
+      params: { section: section.key },
+      props: { section, posts: await getPostsBySection(section.key) },
+    }))
+  );
+}
+
+interface Props {
+  section: SectionConfig;
+  posts: Post[];
+}
+
+const { section, posts } = Astro.props;
+---
+
+<BaseLayout title={section.title} description={section.description}>
+  <div class="wrap">
+    <h1 class="page-title">{section.title}</h1>
+    <p class="page-lede">{section.description}</p>
+
+    <PostList posts={posts} empty="这个栏目还在准备中，第一篇很快就来。" />
+
+    <p class="section-rss">
+      <a href={`/${section.key}/rss.xml`}>订阅本栏目 RSS</a>
+    </p>
+  </div>
+</BaseLayout>
+
+<style>
+  .section-rss {
+    margin-top: 3rem;
+    padding-top: 1.2rem;
+    border-top: 1px solid var(--border);
+    font-size: 0.88rem;
+  }
+</style>

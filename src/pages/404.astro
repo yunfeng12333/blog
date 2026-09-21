@@ -1,0 +1,45 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import { SECTIONS } from '../site.config';
+---
+
+<BaseLayout title="页面不存在" noindex>
+  <div class="wrap notfound">
+    <h1>404</h1>
+    <p>这个地址没有对应的页面。可能是文章还没发布，或者链接打错了。</p>
+    <ul>
+      <li><a href="/">回首页</a></li>
+      {SECTIONS.map((s) => <li><a href={`/${s.key}/`}>{s.title}</a></li>)}
+      <li><a href="/archive/">全部文章</a></li>
+    </ul>
+  </div>
+</BaseLayout>
+
+<style>
+  .notfound {
+    padding-block: 5rem 3rem;
+  }
+
+  .notfound h1 {
+    margin: 0 0 1rem;
+    font-size: 3rem;
+    font-weight: 700;
+    color: var(--text-faint);
+    font-variant-numeric: tabular-nums;
+  }
+
+  .notfound p {
+    margin: 0 0 2rem;
+    color: var(--text-muted);
+    line-height: 1.8;
+  }
+
+  .notfound ul {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.6rem 1.4rem;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+</style>

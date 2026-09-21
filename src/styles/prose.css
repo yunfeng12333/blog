@@ -1,0 +1,233 @@
+/*
+ * 中文正文排版。这是全站唯一值得反复调的地方：
+ * 字号 17-18px、行高 1.8、段间距明显、正文宽度约 40 个汉字。
+ */
+
+.prose {
+  font-size: 1.06rem; /* ≈18px */
+  line-height: var(--leading-prose);
+  color: var(--text);
+  /* 中文段落首行不缩进，改用段间距区分，屏幕阅读更清晰 */
+  word-wrap: break-word;
+}
+
+/* 先清掉所有直接子元素的上下外边距，再用相邻选择器统一给段间距。
+   注意顺序和特异性：`.prose p` 这种写法是 (0,1,1)，会压过下面的 (0,1,0)，
+   所以这里必须用 `.prose > *`，不能写成 `.prose p`。 */
+.prose > * {
+  margin-block: 0;
+}
+
+.prose > * + * {
+  margin-top: 1.5em;
+}
+
+/* 标题：上间距明显大于下间距，让章节归属一眼可辨 */
+.prose h2,
+.prose h3,
+.prose h4 {
+  line-height: 1.45;
+  font-weight: 650;
+  scroll-margin-top: 1.5rem;
+}
+
+.prose h2 {
+  font-size: 1.34em;
+  margin-top: 2.4em;
+  margin-bottom: -0.4em;
+  padding-bottom: 0.35em;
+  border-bottom: 1px solid var(--border);
+}
+
+.prose h3 {
+  font-size: 1.14em;
+  margin-top: 2em;
+  margin-bottom: -0.5em;
+}
+
+.prose h4 {
+  font-size: 1em;
+  margin-top: 1.8em;
+  margin-bottom: -0.6em;
+  color: var(--text-muted);
+}
+
+/* 标题锚点：hover 时才显形，不干扰阅读 */
+.prose :is(h2, h3, h4) > a.anchor {
+  color: var(--text-faint);
+  opacity: 0;
+  margin-left: 0.4em;
+  font-weight: 400;
+  font-size: 0.85em;
+  text-decoration: none;
+}
+
+.prose :is(h2, h3, h4):hover > a.anchor,
+.prose :is(h2, h3, h4) > a.anchor:focus-visible {
+  opacity: 1;
+}
+
+.prose a {
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  text-decoration-thickness: 1px;
+  text-decoration-color: color-mix(in srgb, var(--accent) 40%, transparent);
+}
+
+.prose a:hover {
+  text-decoration-color: currentColor;
+}
+
+/* 只设缩进，不碰 margin——外边距交给上面的 `.prose > *` 规则，
+   否则 (0,1,1) 又会把段间距压掉（同 `.prose p` 那个坑）。 */
+.prose :is(ul, ol) {
+  padding-left: 1.4em;
+}
+
+.prose li + li {
+  margin-top: 0.5em;
+}
+
+/* 嵌套列表不是 .prose 的直接子元素，单独给间距 */
+.prose li > :is(ul, ol) {
+  margin-block: 0.5em 0;
+}
+
+.prose li::marker {
+  color: var(--text-faint);
+}
+
+.prose blockquote {
+  margin-inline: 0;
+  padding: 0.2em 0 0.2em 1.1em;
+  border-left: 3px solid var(--border-strong);
+  color: var(--text-muted);
+}
+
+.prose blockquote > * + * {
+  margin-top: 1em;
+}
+
+.prose strong {
+  font-weight: 650;
+}
+
+/* 图片：块级居中，带说明文字 */
+.prose img {
+  display: block;
+  margin-inline: auto;
+  border-radius: 3px;
+}
+
+.prose figure {
+  margin-inline: 0;
+}
+
+.prose figcaption {
+  margin-top: 0.7em;
+  text-align: center;
+  font-size: 0.86em;
+  color: var(--text-faint);
+}
+
+/* 表格：外层容器横向滚动，长表格不撑破页面 */
+.prose .table-scroll {
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  border: 1px solid var(--border);
+  border-radius: 4px;
+}
+
+.prose table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.94em;
+  line-height: 1.6;
+}
+
+.prose th,
+.prose td {
+  padding: 0.6em 0.85em;
+  text-align: left;
+  border-bottom: 1px solid var(--border);
+  /* 表格单元格里中文不要断得太碎 */
+  word-break: normal;
+}
+
+.prose th {
+  background: var(--bg-subtle);
+  font-weight: 650;
+  white-space: nowrap;
+}
+
+.prose tbody tr:last-child td {
+  border-bottom: 0;
+}
+
+/* 代码 */
+.prose :not(pre) > code {
+  background: var(--bg-code);
+  border: 1px solid var(--border);
+  border-radius: 3px;
+  padding: 0.12em 0.36em;
+  font-family: var(--font-mono);
+  font-size: 0.86em;
+  word-break: break-word;
+}
+
+.prose pre {
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  padding: 1rem 1.1rem;
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  font-size: 0.86em;
+  line-height: 1.65;
+  tab-size: 2;
+}
+
+.prose pre > code {
+  font-family: var(--font-mono);
+  background: none;
+  border: 0;
+  padding: 0;
+}
+
+/* Shiki 双主题：跟随 data-theme 与系统偏好切换 */
+:root[data-theme='dark'] .prose .astro-code,
+:root[data-theme='dark'] .prose .astro-code span {
+  color: var(--shiki-dark) !important;
+  background-color: var(--shiki-dark-bg) !important;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme='light']) .prose .astro-code,
+  :root:not([data-theme='light']) .prose .astro-code span {
+    color: var(--shiki-dark) !important;
+    background-color: var(--shiki-dark-bg) !important;
+  }
+}
+
+.prose sup {
+  line-height: 1;
+}
+
+.prose kbd {
+  font-family: var(--font-mono);
+  font-size: 0.82em;
+  border: 1px solid var(--border-strong);
+  border-bottom-width: 2px;
+  border-radius: 3px;
+  padding: 0.1em 0.4em;
+}
+
+@media (max-width: 34rem) {
+  .prose {
+    font-size: 1.03rem;
+    line-height: 1.78;
+  }
+
+  .prose h2 {
+    font-size: 1.24em;
+  }
+}

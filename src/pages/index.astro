@@ -16,10 +16,15 @@ const sections = await Promise.all(
 
 <BaseLayout title={SITE.title}>
   <div class="wrap">
+    {/* h1 是站名而不是人名：这是一个出版物式的首页，不是个人主页 */}
     <section class="intro">
       <h1>{SITE.title}</h1>
       <p>{SITE.intro}</p>
     </section>
+
+    <p class="byline">
+      由 <a href="/about/">{SITE.author}</a> 写于都柏林
+    </p>
 
     <nav class="sections" aria-label="栏目">
       {
@@ -60,6 +65,17 @@ const sections = await Promise.all(
     color: var(--text-muted);
     font-size: 1.04rem;
     line-height: 1.8;
+  }
+
+  /* 作者退成一行小字的署名，而不是首页的主角 */
+  .byline {
+    margin: 1.2rem 0 0;
+    color: var(--text-faint);
+    font-size: 0.88rem;
+  }
+
+  .byline a {
+    color: var(--text-muted);
   }
 
   .sections {
